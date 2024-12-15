@@ -13,7 +13,16 @@
         <pubDate>Sat, 14 Dec 2024 00:41:26 +0800</pubDate>
         
         <guid>http://localhost:1313/p/newnew/</guid>
-        <description></description>
+        <description>&lt;h1 id=&#34;mast3r&#34;&gt;Mast3r
+&lt;/h1&gt;&lt;p&gt;这是一个测试文档
+mast3r 的核心由以下五个部分组成:&lt;/p&gt;
+&lt;p&gt;convert_dust3r_pairs_naming:  将输入图像对的命名规范从dust3r转换至 mast3r;&lt;/p&gt;
+&lt;p&gt;forward_mast3r : 在ViT模型上执行前向传播，输出点云的位置及置信度；&lt;/p&gt;
+&lt;p&gt;prepare_canonical_data  : 根据上个函数得到的置信度等信息算出一个评分用于衡量图像之间的匹配度；&lt;/p&gt;
+&lt;p&gt;compute_min_spanning_tree   : 确定重建的图像对的顺序；&lt;/p&gt;
+&lt;p&gt;condense_data  : 11&lt;/p&gt;
+&lt;p&gt;$ x = \frac{1}{\alpha}$&lt;/p&gt;
+</description>
         </item>
         <item>
         <title>Chinese Test</title>
