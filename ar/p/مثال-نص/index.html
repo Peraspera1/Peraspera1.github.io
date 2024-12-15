@@ -135,9 +135,9 @@
 
                             <select name="language" title="language" onchange="window.location.href = this.selectedOptions[0].value">
                                 
-                                    <option value="http://localhost:1313/" >English</option>
+                                    <option value="http://localhost:1313/en/" >English</option>
                                 
-                                    <option value="http://localhost:1313/zh-cn/" >中文</option>
+                                    <option value="http://localhost:1313/" >中文</option>
                                 
                                     <option value="http://localhost:1313/ar/" selected>عربي</option>
                                 
@@ -303,7 +303,7 @@
 
             <div>
                 
-                    <a href="http://localhost:1313/p/placeholder-text/" class="link">English</a>
+                    <a href="http://localhost:1313/p/placeholder-text/" class="link">中文</a>
                 
             </div>
         </footer>
@@ -362,6 +362,30 @@
 
 
     
+        <link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI&#43;WdtXRGWt2kTvGFasHpSy3SV"crossorigin="anonymous"
+            ><script 
+                src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG&#43;vnGctmUb0ZY0l8"crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"integrity="sha384-&#43;VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4&#43;/RRE05"crossorigin="anonymous"
+                defer
+                >
+            </script><script>
+    window.addEventListener("DOMContentLoaded", () => {
+        renderMathInElement(document.body, {
+            delimiters: [
+                { left: "$$", right: "$$", display: true },
+                { left: "$", right: "$", display: false },
+                { left: "\\(", right: "\\)", display: false },
+                { left: "\\[", right: "\\]", display: true }
+            ],
+            ignoredClasses: ["gist"]
+        });})
+</script>
+    
 </article>
 
     
@@ -419,9 +443,7 @@
     <section class="copyright">
         &copy; 
         
-            2020 - 
-        
-        2024 Example Person
+        2024 xj
     </section>
     
     <section class="powerby">
