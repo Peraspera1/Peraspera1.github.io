@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>3DGS on Xiong Jia</title>
+        <link>https://Peraspera1.github.io/categories/3dgs/</link>
+        <description>Recent content in 3DGS on Xiong Jia</description>
+        <generator>Hugo -- gohugo.io</generator>
+        <language>zh-cn</language>
+        <copyright>xj</copyright>
+        <lastBuildDate>Wed, 19 Feb 2025 00:00:00 +0000</lastBuildDate><atom:link href="https://Peraspera1.github.io/categories/3dgs/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>Phygaussian</title>
+        <link>https://Peraspera1.github.io/p/physgaussian/</link>
+        <pubDate>Wed, 19 Feb 2025 00:00:00 +0000</pubDate>
+        
+        <guid>https://Peraspera1.github.io/p/physgaussian/</guid>
+        <description>&lt;img src="https://Peraspera1.github.io/images/physgaussian_cover.jpg" alt="Featured image of post Phygaussian" /&gt;&lt;h1 id=&#34;论文信息&#34;&gt;论文信息
+&lt;/h1&gt;&lt;h2 id=&#34;信息概览&#34;&gt;信息概览
+&lt;/h2&gt;&lt;p&gt;&lt;strong&gt;CVPR 2024 Highlight&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;论文题目：&lt;/strong&gt; PhysGaussian: Physics-Integrated 3D Gaussians for Generative Dynamics&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;论文单位：&lt;/strong&gt; UCLA&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;是否开源：&lt;/strong&gt; 是&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;总结：&lt;/strong&gt;
+PhysGaussian是第一篇将3D高斯核（用于渲染）与物理属性（如速度、应变、应力）相结合，使其能够模拟牛顿力学中的动态行为，适用于多种不同材料（如弹性物体、金属、非牛顿流体等）。&lt;/p&gt;
+&lt;h2 id=&#34;论文思路&#34;&gt;论文思路
+&lt;/h2&gt;&lt;p&gt;核心思想是what you see is what you simulate。&lt;/p&gt;
+&lt;p&gt;传统的图形学物理引擎往往会导致模拟与可视化之间的差别，但自然界中材料的物理特性与视觉外观本质上也是交织在一起的，受此启发，本文将物理学赋予 3D 高斯核，赋予它们运动学属性（如速度和应变）以及机械属性（如弹性能、应力和塑性），进而弥补这一差别。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://Peraspera1.github.io/images/physgaussian/methodoverview.jpg&#34;
+	
+	
+	
+	loading=&#34;lazy&#34;
+	
+		alt=&#34;代码整体框架&#34;
+	
+	
+&gt;&lt;/p&gt;
+&lt;h1 id=&#34;代码debug记录&#34;&gt;代码debug记录
+&lt;/h1&gt;</description>
+        </item>
+        
+    </channel>
+</rss>

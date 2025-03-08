@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>Dexterous on Xiong Jia</title>
+        <link>https://Peraspera1.github.io/categories/dexterous/</link>
+        <description>Recent content in Dexterous on Xiong Jia</description>
+        <generator>Hugo -- gohugo.io</generator>
+        <language>zh-cn</language>
+        <copyright>xj</copyright>
+        <lastBuildDate>Thu, 06 Mar 2025 10:51:30 +0800</lastBuildDate><atom:link href="https://Peraspera1.github.io/categories/dexterous/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>Dough</title>
+        <link>https://Peraspera1.github.io/p/dough/</link>
+        <pubDate>Thu, 06 Mar 2025 10:51:30 +0800</pubDate>
+        
+        <guid>https://Peraspera1.github.io/p/dough/</guid>
+        <description>&lt;img src="https://Peraspera1.github.io/images/doughs/cover.png" alt="Featured image of post Dough" /&gt;&lt;h1 id=&#34;论文信息&#34;&gt;论文信息
+&lt;/h1&gt;&lt;h2 id=&#34;信息概览&#34;&gt;信息概览
+&lt;/h2&gt;&lt;p&gt;&lt;strong&gt;ECCV 2024&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;论文题目：&lt;/strong&gt; DoughNet: A Visual Predictive Model for Topological Manipulation of Deformable Objects&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;论文单位：&lt;/strong&gt; Columbia University&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;是否开源：&lt;/strong&gt; 是&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;总结：&lt;/strong&gt;
+纯视觉的预测模型，主要用于长时间预测可变性物体(如黏土/橡皮泥)的在不同物理条件下的几何拓扑变换。
+可变形物体（如面团）的操作通常涉及拓扑变化（如分裂、合并）。传统方法主要关注几何形变，而忽略了拓扑变化。为了解决这个问题，研究者提出 DoughNet，一个基于 Transformer 的视觉预测模型，能够&lt;strong&gt;推测因不同工具或操作方式导致的拓扑变化&lt;/strong&gt;。&lt;/p&gt;
+&lt;h2 id=&#34;论文细节&#34;&gt;论文细节
+&lt;/h2&gt;&lt;h3 id=&#34;输入输出&#34;&gt;输入输出
+&lt;/h3&gt;&lt;p&gt;DoughNet 需要三个主要输入：&lt;/p&gt;
+&lt;p&gt;初始状态的 RGB-D 图像：通过深度相机（如RealSense）获取点云数据。
+由于是单视角，数据是不完整的，因此需要进一步补全。&lt;/p&gt;
+&lt;p&gt;机器人端执行工具（End-Effector, EE）的几何形状：
+EE 可以是剪刀、夹子、滚轴等工具，每种工具会对物体施加不同影响。
+该工具的几何形状以&lt;strong&gt;点云&lt;/strong&gt;形式输入。&lt;/p&gt;
+&lt;p&gt;操作轨迹（Action Trajectory）：机器人执行的操作，包括工具的移动路径、开合角度、力的大小等。&lt;/p&gt;
+&lt;p&gt;DoughNet通过潜在空间预测生成两个核心输出：&lt;/p&gt;
+&lt;p&gt;1 几何预测（Geometrical Prediction）：&lt;/p&gt;
+&lt;p&gt;预测物体的形状变化（如被拉长、压扁、弯曲等）。
+结果以点云、体素或隐式表面表示（Occupancy Map） 输出。&lt;/p&gt;
+&lt;p&gt;2 拓扑预测（Topological Prediction）：&lt;/p&gt;
+&lt;p&gt;预测物体是否会合并、分裂或变形为不同拓扑结构（如从球变为环）。
+结果以拓扑图（Topology Graph）形式表示，包括：连通组件数量（Number of Components），每个组件的拓扑属性（如 genus, 环数）。
+这些输出最终用于机器人操作规划，帮助选择合适的工具和动作策略。&lt;/p&gt;
+&lt;p&gt;for example,输入：初始面团形态（RGB-D 图像）;给定机器人工具为刀片；再给一段向下切割的轨迹。
+那么这个网络会预测切割过程中的形态变化（面团从整体到分裂）及最终分裂后的面团形态（两个独立部分）&lt;/p&gt;
+&lt;h3 id=&#34;网络信息流&#34;&gt;网络信息流
+&lt;/h3&gt;&lt;h4 id=&#34;编码&#34;&gt;编码
+&lt;/h4&gt;&lt;p&gt;DoughNet采用去噪自编码器来处理输入数据，并生成潜在表示（Latent Codes）。&lt;/p&gt;
+&lt;p&gt;首先对于物体的初始点云数据 $X \in ℝ^{N×(3+1)}$（XYZ 位置 + 深度值）。使用Transformer Cross-Attention 计算点云之间的关系，并生成一组潜在特征（Latent Codes）。
+再使用自注意力机制（Self-Attention）在点云上执行全局聚合，生成一个紧凑的潜在编码（Z）。这个潜在编码允许 DoughNet 处理不同大小和拓扑结构的物体。&lt;/p&gt;
+&lt;p&gt;然后把EE（工具）的几何信息也被编码成潜在向量，与物体的潜在表示一起处理，以推测它们的交互方式。&lt;/p&gt;
+&lt;p&gt;输出：一组潜在编码 [z]，表示物体当前的形状及拓扑信息。&lt;/p&gt;
+&lt;h4 id=&#34;预测&#34;&gt;预测
+&lt;/h4&gt;&lt;p&gt;DoughNet采用自回归预测来模拟物体在操作过程中的变化。&lt;/p&gt;
+&lt;p&gt;输入：&lt;/p&gt;
+&lt;p&gt;物体当前的潜在编码 [zt]。&lt;/p&gt;
+&lt;p&gt;EE 的编码 [zt_m]，代表操作工具的信息。&lt;/p&gt;
+&lt;p&gt;当前的操作 [a_t]（如 EE 移动路径）。&lt;/p&gt;
+&lt;p&gt;Transformer 预测:&lt;/p&gt;
+&lt;p&gt;通过Cross-Attention，模型推测物体与 EE 交互后下一步的潜在编码 [z_{t+1}]。
+由于预测发生在潜在空间（Latent Space），计算量较低，且模型可以学习更稳定的特征。&lt;/p&gt;
+&lt;p&gt;多步预测（Multi-Step Prediction）：&lt;/p&gt;
+&lt;p&gt;由于是自回归结构，DoughNet可以递归地预测未来形态（反复输入自己的输出，进行多步预测）。&lt;/p&gt;
+&lt;p&gt;预测的输出是：
+1 下一步物体的潜在编码 [z_{t+1}]。
+2 EE 的影响 [z_{t+1}^m]（用于判断 EE 选择是否合理）。&lt;/p&gt;
+&lt;h4 id=&#34;解码&#34;&gt;解码
+&lt;/h4&gt;&lt;p&gt;DoughNet 需要将预测的潜在编码转换回物体的几何形状和拓扑结构。&lt;/p&gt;
+&lt;p&gt;形状解码：采用 Transformer 解码层，将潜在编码 [z] 还原成 物体表面的点云或体素网格。&lt;/p&gt;
+&lt;p&gt;组件分割（Component Segmentation）：预测哪些点属于哪个物体组件（如两个面团是否仍然是一个整体，或已经分裂成两部分）。&lt;/p&gt;
+&lt;p&gt;拓扑预测（Topology Prediction）：
+预测物体的 拓扑结构（genus, 组件数），比如：是否分裂？是否合并？是否变成一个环？
+采用Cross-Attention计算物体在不同时间步的拓扑关系。&lt;/p&gt;
+&lt;p&gt;最终输出：完整物体的形状（Occupancy Map, Point Cloud, Mesh）和拓扑结构。&lt;/p&gt;
+</description>
+        </item>
+        
+    </channel>
+</rss>

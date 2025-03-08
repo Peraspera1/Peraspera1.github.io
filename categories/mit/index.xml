@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>MIT on Xiong Jia</title>
+        <link>https://Peraspera1.github.io/categories/mit/</link>
+        <description>Recent content in MIT on Xiong Jia</description>
+        <generator>Hugo -- gohugo.io</generator>
+        <language>zh-cn</language>
+        <copyright>xj</copyright>
+        <lastBuildDate>Mon, 03 Mar 2025 10:04:23 +0800</lastBuildDate><atom:link href="https://Peraspera1.github.io/categories/mit/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>DANOs</title>
+        <link>https://Peraspera1.github.io/p/danos/</link>
+        <pubDate>Mon, 03 Mar 2025 10:04:23 +0800</pubDate>
+        
+        <guid>https://Peraspera1.github.io/p/danos/</guid>
+        <description>&lt;img src="https://Peraspera1.github.io/images/DANOs/cover.png" alt="Featured image of post DANOs" /&gt;&lt;h1 id=&#34;论文信息&#34;&gt;论文信息
+&lt;/h1&gt;&lt;h2 id=&#34;信息概览&#34;&gt;信息概览
+&lt;/h2&gt;&lt;p&gt;&lt;strong&gt;RAL 2023&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;论文题目：&lt;/strong&gt; Differentiable Physics Simulation of Dynamics-Augmented Neural Objects&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;论文单位：&lt;/strong&gt; MIT&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;是否开源：&lt;/strong&gt; 否&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;总结：&lt;/strong&gt;
+输入未经处理的rgb视频，使用可微分物理引擎来模拟其在施加的力和扭矩下的运动&lt;/p&gt;
+&lt;h2 id=&#34;论文细节&#34;&gt;论文细节
+&lt;/h2&gt;&lt;p&gt;1 估计物体质量、质心、惯性矩阵和表面摩擦系数，通过表面接触的概率?&lt;/p&gt;
+&lt;p&gt;总体思想如下：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://Peraspera1.github.io/images/danos/sys1.png&#34;
+	
+	
+	
+	loading=&#34;lazy&#34;
+	
+		alt=&#34;理论&#34;
+	
+	
+&gt;&lt;/p&gt;
+&lt;p&gt;他们主要的创新点还是在提取物体表面上做的，但该方法是建立在nerf场上的，没必要借鉴，在3DGS的情况下应该有更好的表示方式。
+总之，这个工作主要还是建立在dojo这个他们MIT自己研究的仿真平台上的，不一定有泛用性，而且这个平台已经停止开发了。
+可以去研究下genesis是怎么工作的。&lt;/p&gt;
+&lt;h2 id=&#34;相关论文&#34;&gt;相关论文
+&lt;/h2&gt;&lt;p&gt;“Marching cubes: A high resolution 3d surface construction algorithm”  siggraph  生成物体表面的网格模拟运动&lt;/p&gt;
+</description>
+        </item>
+        
+    </channel>
+</rss>

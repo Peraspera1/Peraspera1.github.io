@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="zh-cn" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="尽管当前的视频生成模型已能产生令人满意的效果，但生成的结果中仍常出现不自然的现象(Sora)，这些现象往往违背了我们对几何和物理常识的理解，因此近年来，许多研究尝试将物理规律融入视频生成模型来得到更好的结果。与此同时，在机器人领域，大多数研究仍主要聚焦于机器人自身的运动轨迹生成，而对环境及交互物体的感知仍停留在视觉信息的层面，未能充分利用物理规律。因此，这篇文章总结了我对近期工作的一些总结，以及一点点对于这些工作在灵巧手操作上可能应用的思考。\n">
+<title>Phys_Summary</title>
+
+<link rel='canonical' href='https://Peraspera1.github.io/p/phys_summary/'>
+
+<link rel="stylesheet" href="/scss/style.min.2392bcd1d39f1183c49de24509ae4b02156a2d65691556512ffe18ecffcd2a0f.css"><meta property='og:title' content="Phys_Summary">
+<meta property='og:description' content="尽管当前的视频生成模型已能产生令人满意的效果，但生成的结果中仍常出现不自然的现象(Sora)，这些现象往往违背了我们对几何和物理常识的理解，因此近年来，许多研究尝试将物理规律融入视频生成模型来得到更好的结果。与此同时，在机器人领域，大多数研究仍主要聚焦于机器人自身的运动轨迹生成，而对环境及交互物体的感知仍停留在视觉信息的层面，未能充分利用物理规律。因此，这篇文章总结了我对近期工作的一些总结，以及一点点对于这些工作在灵巧手操作上可能应用的思考。\n">
+<meta property='og:url' content='https://Peraspera1.github.io/p/phys_summary/'>
+<meta property='og:site_name' content='Xiong Jia'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='' /><meta property='article:published_time' content='2025-02-27T12:49:57&#43;08:00'/><meta property='article:modified_time' content='2025-02-27T12:49:57&#43;08:00'/><meta property='og:image' content='https://Peraspera1.github.io/images/summary_cover.png' />
+<meta name="twitter:title" content="Phys_Summary">
+<meta name="twitter:description" content="尽管当前的视频生成模型已能产生令人满意的效果，但生成的结果中仍常出现不自然的现象(Sora)，这些现象往往违背了我们对几何和物理常识的理解，因此近年来，许多研究尝试将物理规律融入视频生成模型来得到更好的结果。与此同时，在机器人领域，大多数研究仍主要聚焦于机器人自身的运动轨迹生成，而对环境及交互物体的感知仍停留在视觉信息的层面，未能充分利用物理规律。因此，这篇文章总结了我对近期工作的一些总结，以及一点点对于这些工作在灵巧手操作上可能应用的思考。\n"><meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content='https://Peraspera1.github.io/images/summary_cover.png' />
+        
+<script>
+  MathJax = {
+    tex: {
+      inlineMath: [['\\(', '\\)']],
+      displayMath: [['$$','$$']],
+      processEscapes: true,
+      processEnvironments: true
+    },
+    options: {
+      skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+    }
+  };
+</script>
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="切换菜单">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/img/avatar_hu_f509edb42ecc0ebd.png" width="300"
+                            height="300" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+                    <span class="emoji">🍥</span>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/">Xiong Jia</a></h1>
+            <h2 class="site-description">my personal page</h2>
+        </div>
+    </header><ol class="menu-social">
+            
+                <li>
+                    <a 
+                        href='https://github.com/CaiJimmy/hugo-theme-stack'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a 
+                        href='https://twitter.com'
+                        target="_blank"
+                        title="Twitter"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-twitter" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M22 4.01c-1 .49 -1.98 .689 -3 .99c-1.121 -1.265 -2.783 -1.335 -4.38 -.737s-2.643 2.06 -2.62 3.737v1c-3.245 .083 -6.135 -1.395 -8 -4c0 0 -4.182 7.433 4 11c-1.872 1.247 -3.739 2.088 -6 2c3.308 1.803 6.913 2.423 10.034 1.517c3.58 -1.04 6.522 -3.723 7.651 -7.742a13.84 13.84 0 0 0 .497 -3.753c-.002 -.249 1.51 -2.772 1.818 -4.013z" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>主页</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/%E5%85%B3%E4%BA%8E/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                
+                <span>关于</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/archives/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                
+                <span>Archives</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>Search</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/links/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
+  <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+</svg>
+
+
+
+                
+                <span>Links</span>
+            </a>
+        </li>
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+                    
+                        <li id="i18n-switch">  
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M4 5h7" />
+  <path d="M9 3v2c0 4.418 -2.239 8 -5 8" />
+  <path d="M5 9c-.003 2.144 2.952 3.908 6.7 4" />
+  <path d="M12 20l4 -9l4 9" />
+  <path d="M19.1 18h-6.2" />
+</svg>
+
+
+
+                            <select name="language" title="language" onchange="window.location.href = this.selectedOptions[0].value">
+                                
+                                    <option value="https://Peraspera1.github.io/en/" >English</option>
+                                
+                                    <option value="https://Peraspera1.github.io/" selected>中文</option>
+                                
+                                    <option value="https://Peraspera1.github.io/ar/" >عربي</option>
+                                
+                            </select>
+                        </li>
+                    
+                
+
+                
+                    <li id="dark-mode-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <span>暗色模式</span>
+                    </li>
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">目录</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#physics-simulation--video-generation">Physics Simulation &amp; Video Generation</a>
+      <ol>
+        <li><a href="#物理对齐-physics-alignment">物理对齐 Physics Alignment</a></li>
+        <li><a href="#二维平面模拟-2d-physics">二维平面模拟 2D Physics</a></li>
+        <li><a href="#三维空间模拟-3d-physics">三维空间模拟 3D Physics</a></li>
+        <li><a href="#推断物理信息">推断物理信息</a></li>
+      </ol>
+    </li>
+    <li><a href="#机器人中的应用-application-in-robot">机器人中的应用 Application in Robot</a></li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <main class="main full-width">
+    <article class="has-image main-article">
+    <header class="article-header">
+        <div class="article-image">
+            <a href="/p/phys_summary/">
+                
+                    <img src="/images/summary_cover.png" loading="lazy" alt="Featured image of post Phys_Summary" />
+                
+            </a>
+        </div>
+    
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/diffusion/" >
+                Diffusion
+            </a>
+        
+            <a href="/categories/dynamics/" >
+                Dynamics
+            </a>
+        
+            <a href="/categories/cg/simulation/" >
+                CG/Simulation
+            </a>
+        
+            <a href="/categories/robotic/" >
+                Robotic
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/p/phys_summary/">Phys_Summary</a>
+        </h2>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">Feb 27, 2025</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    阅读时长: 14 分钟
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <p>尽管当前的视频生成模型已能产生令人满意的效果，但生成的结果中仍常出现不自然的现象(<a class="link" href="https://openai.com/index/sora/"  target="_blank" rel="noopener"
+    >Sora</a>)，这些现象往往违背了我们对几何和物理常识的理解，因此近年来，许多研究尝试将物理规律融入视频生成模型来得到更好的结果。与此同时，在机器人领域，大多数研究仍主要聚焦于机器人自身的运动轨迹生成，而对环境及交互物体的感知仍停留在视觉信息的层面，未能充分利用物理规律。因此，这篇文章总结了我对近期工作的一些总结，以及一点点对于这些工作在灵巧手操作上可能应用的思考。</p>
+<p>我的想法大致如下：
+<img src="/images/summary/overview.png"
+	
+	
+	
+	loading="lazy"
+	
+		alt="overview"
+	
+	
+></p>
+<p>整个工作的pipeline如下：</p>
+<ol>
+<li> 给定一个任务，利用LLM预测我们需要知道哪些物理属性（比如物体的摩擦系数）；</li>
+<li> 输入一段视频作为监督信号，从该视频的初始帧开始进行物理仿真，优化物理参数场；</li>
+<li> 得到较为精确的物理参数后，生成/仿真得到该物体在被施加一个力后的响应；</li>
+<li> 在已有的手物交互轨迹基础上，如果能准确预测物体对外力的响应，就能进一步微调手的施力方向和大小，或者将这些信息直接融入轨迹生成过程中，以提升交互精度。</li>
+</ol>
+<p>一句话概括就是让机器人理解真实环境中的物理属性，从而更好地辅助操作实现。那么自然而然地会引出两个问题，</p>
+<p><strong>首先，如何从环境中恢复物体的物理属性并进行物理仿真？</strong></p>
+<p><strong>其次，在机器人已知物体的物理属性后，如何利用这些信息优化灵巧手的操作？</strong></p>
+<h2 id="physics-simulation--video-generation">Physics Simulation &amp; Video Generation
+</h2><p>事实上，<strong>给定视频恢复物理属性</strong>(pipeline2)与<strong>给定物理属性生成视频</strong>(pipeline3)互为反问题(不过我更关注的是生成物体对于外力的响应，并不需要那种精细的视频)。然而，近年来学界的研究更倾向于后者，这一领域的研究主要分为以下三个方向：</p>
+<h3 id="物理对齐-physics-alignment">物理对齐 Physics Alignment
+</h3><p>在语言模型中，对齐（Alignment）指的是通过一系列算法和工程手段，修正模型的行为，使其输出符合预设的安全边界和人类意图。与之对应的，修正视频模型的输出使其满足物理规则的过程就是物理对齐。作为对齐领域的代表性工作，<a class="link" href="https://arxiv.org/abs/2203.02155"  target="_blank" rel="noopener"
+    >InstructGPT</a> 提出了两种对齐方法：</p>
+<p><strong>监督微调</strong>（Supervised Fine Tuning，<strong>SFT</strong>）人工标注高质量的提示（prompt）和回答（output）数据集，通过监督学习的方式微调模型。</p>
+<p><strong>基于人类反馈的强化学习</strong>（Reinforcement Learning from Human Feedback，<strong>RLHF</strong>）对同一个提示，模型输出多个回答，人工对这些回答进行比较打分；使用打分的结果训练一个反馈模型（Reward Model），用于评价模型输出的好坏；使用反馈模型对模型进行强化学习，比如近端策略优化（Proximal Policy Gradient，PPO）。</p>
+<p>将这两种想法用于视频模型中是比较直观的。对于 SFT，我们就需要使用物理真实的视频作为输入。但是真实世界中的视频当然都是物理真实的，可能的问题是视频动态不够，导致模型没有接受到足够的动态信息。因此像 <a class="link" href="https://github.com/NVIDIA/Cosmos"  target="_blank" rel="noopener"
+    >Cosmos</a> 在预训练阶段就会保证数据能够反映真实物理规则。这主要是通过两点做到的：</p>
+<ol>
+<li> 收集包含大量动态的视频：包括驾驶视频、手部动作、第一人称视角、模拟结果等等。</li>
+<li> 对数据进行过滤：剔除质量低的、缺乏动态的、非物理等的视频，并提取一部分高质量视频作为后训练数据集。</li>
+</ol>
+<p>尽管 Cosmos 的<a class="link" href="https://arxiv.org/abs/2501.03575"  target="_blank" rel="noopener"
+    >论文</a>在 5.3.2 节专门讨论了物理对齐的问题，但是实际上并没有做更多的尝试，只是在几个场景中测试了 Cosmos 生成的结果是否吻合模拟/真实的物理。</p>
+<p>对于 RLHF 而言，首要问题是需要一个反馈模型来判别模型输出的结果是否满足物理规律。这方向一个代表工作是 <a class="link" href="https://videophy.github.io/"  target="_blank" rel="noopener"
+    >VideoPhy</a>。这篇工作的核心是对市面上十二个视频模型的生成结果进行人工打分，然后训练一个打分网络 VideoCon-Physics。打分分为两个维度，每个维度得分只有 0 或 1：一个是语义的符合程度（Semantic Adherence，SA），一个是是否符合物理常识（Physical Commonsense，PC），结果如下：
+<img src="/images/summary/video_phy.png"
+	
+	
+	
+	loading="lazy"
+	
+		alt="Benchmark"
+	
+	
+></p>
+<center style="font-size:14px;color:#C0C0C0;text-decoration:underline">Benchmark</center> 
+<p>可以发现成绩最好的是开源模型 <a class="link" href="https://github.com/THUDM/CogVideo"  target="_blank" rel="noopener"
+    >CogVideoX-5B</a>，但是也只是勉强及格的水平。这方向类似的工作还有 <a class="link" href="https://tiger-ai-lab.github.io/VideoScore/"  target="_blank" rel="noopener"
+    >VideoScore</a>，<a class="link" href="https://phygenbench2024.github.io/"  target="_blank" rel="noopener"
+    >PhyGenBench</a>。理论上有了打分模型之后我们就可以对视频模型进行强化学习对齐了，<a class="link" href="https://onlinevpo.github.io/"  target="_blank" rel="noopener"
+    >OnlineVPO</a> 就使用了 VideoScore 作为反馈模型微调了 <a class="link" href="https://github.com/hpcaitech/Open-Sora"  target="_blank" rel="noopener"
+    >OpenSora</a> 模型，使其在 VideoScore 得分上超越了其他模型。</p>
+<p>整体上来说，物理对齐比较依赖预训练大模型的能力。对于语言模型来说，对齐往往会降低模型在基准测试上的分数，称为支付对齐税（Alignment Tax）。对于视频模型情况应该是类似的，增强其在物理动态方面的能力可能导致其他能力的削弱。因此，一个更本质的问题是，通过预训练的方式大模型是否能够足够泛化地学到物理规律？字节的工作 <a class="link" href="https://phyworld.github.io/"  target="_blank" rel="noopener"
+    >How Far is Video Generation from World Model? A Physical Law Perspective</a> 是这个方向的一个初步探索。</p>
+<h3 id="二维平面模拟-2d-physics">二维平面模拟 2D Physics
+</h3><p>Ok，如果视频模型短期内无法达到我们对于物理规律的需求，那我们是否可以通过加入物理模拟的方式增强这方面的能力呢？由于视频模型都是 2D 的，我们可以先从二维平面上的模拟开始，这一领域分为两个方向，一个是显式地加入物理规律并在屏幕空间上进行模拟，另一个则是隐式地推断物体的动力学信息。</p>
+<p>屏幕空间模拟（Screen-space Simulation）指的是绕过 3D 模型，直接在屏幕空间中模拟物体的动态。这方面的一个代表性工作是 <a class="link" href="https://stevenlsw.github.io/physgen/"  target="_blank" rel="noopener"
+    >PhysGen</a>。
+<img src="/images/summary/physgen.png"
+	
+	
+	
+	loading="lazy"
+	
+		alt="Phygen"
+	
+	
+></p>
+<center style="font-size:14px;color:#C0C0C0;text-decoration:underline">Physgen 流程图</center> 
+<p>大致的流程分为三步：1. 给定一张初始图片，我们先做分割，并使用图像理解模型获取法向贴图、语义等信息，然后使用大语言模型推测对应的材质；2. 使用屏幕空间的 2D 模拟器进行模拟（刚体模拟）；3. 使用视频模型将模拟结果与法向贴图等整合起来，得到最终视频。可以发现，这个流程中其实并不需要大模型生成动态，大模型提供的是一个满足时间连续性的&quot;渲染器&quot;，将模拟结果渲染成视频。最近的 <a class="link" href="https://xpandora.github.io/PhysAnimator/"  target="_blank" rel="noopener"
+    >PhysAnimator</a> 也是这个思路，不过将模拟的对象进一步扩展到了布料这样的软性材料。</p>
+<p>当然，也有不显式加入物理模拟的方式来实现图片上的动力学的工作，而是通过分析图片中物体的振动规律得到信息，并利用这些信息来推断物体的物理特性和驱动它们运动的力，这一工作最早可以追溯到Davis的博士论文<a class="link" href="https://dspace.mit.edu/handle/1721.1/107330"  target="_blank" rel="noopener"
+    >Visual vibration analysis</a>。如果有了物体对于一个已知力的响应，那么我们是不是就可以在不知道物理规律的前提下分析一个物体对于未知的力的响应了呢（类似于反馈-控制，黑盒模型）？2024年的CVPR Best Paper <a class="link" href="https://generative-dynamics.github.io/"  target="_blank" rel="noopener"
+    >Generative Image Dynamics</a> 就做了这样的一件事。与PhysGen不同，这篇论文并没有显式地建模出物体的运动规律，而是只学习到了振动频率(事实上，物体振动频率满足该规律：$\omega = \sqrt{\frac{k}{m}}$)，即学习每个像素点的振动规律(利用傅里叶变换分解，学习的参数是傅里叶的系数)。在不考虑训练成本的情况下，相比于显式地模拟，这种方式的推理速度肯定更快，但是显然只能局限于振动这种简单的物理规律，当然，通过改变基函数的方式（比如把傅里叶级数换成勒让德级数）也许可以将该方法推广到更多真实情景，这也是一个值得探索的方向。</p>
+<p>总的来说，在二维平面上的模拟的优点很明显，我们能够对生成的结果进行非常精确的控制，并且在小幅度内基本满足我们对物理规则的认知。但是缺点同样很明显，由于我们是在屏幕空间做分割和模拟，我们永远只能生成物体一面的结果，像布料的遮挡褶皱也无法处理。并且，生成结果的视角只能是固定的。这使得这类方法只适用于生成动态壁纸这样比较受限的应用，不能作为通用的视频生成方法。</p>
+<p>不过我觉得<a class="link" href="https://stevenlsw.github.io/physgen/"  target="_blank" rel="noopener"
+    >PhysGen</a>的思维范式很好，如果要继续往下做的话我更倾向于在该工作上的框架上去做。</p>
+<h3 id="三维空间模拟-3d-physics">三维空间模拟 3D Physics
+</h3><p>既然 2D 的模拟终究是妥协，那不如我们直接回到三维模拟。回顾传统的图形管线，生成视频的过程大致可以分为准备3D 资产、进行模拟、渲染结果这三步。这三步中预训练的视频模型可以充当一个非常好的渲染器，比如下图展示的，<a class="link" href="https://github.com/NVIDIA/Cosmos"  target="_blank" rel="noopener"
+    >Cosmos</a> 可以将三维模拟的结果风格迁移到真实场景的<a class="link" href="https://www.youtube.com/watch?v=9Uch931cDx8"  target="_blank" rel="noopener"
+    >视频</a>。
+<img src="/images/summary/cosmos1.png"
+	
+	
+	
+	loading="lazy"
+	
+		alt="Cosmos1"
+	
+	
+>
+<img src="/images/summary/cosmos2.png"
+	
+	
+	
+	loading="lazy"
+	
+		alt="Cosmos2"
+	
+	
+></p>
+<center style="font-size:14px;color:#C0C0C0;text-decoration:underline"> Cosmos中的风格迁移</center> 
+<p>在有 3D 资产和物理参数的基础上，模拟也不是一个困难的问题。传统模拟算法在平衡模拟效果和速度上已经提供了非常多的选择。因此最大的问题在于第一步：对于用户给定的一个语言提示，或者是初始帧，如何获取对应的 3D 资产。对应这两种情况我们可以看到两种解决方法，一是训练文本生成 3D 资产的模型，二是从真实图片中重建。</p>
+<p>首先，世面上已经有很多专注做文本生成 3D 资产的 AI，比如 <a class="link" href="https://hyper3d.ai/?lang=zh"  target="_blank" rel="noopener"
+    >Rodin</a>，<a class="link" href="https://www.meshy.ai/"  target="_blank" rel="noopener"
+    >Meshy</a> 等,可以直接将这些模型导入到像 Houdini、Blender 这样的图形软件中进行模拟。之前受到很多关注的 <a class="link" href="https://genesis-embodied-ai.github.io/"  target="_blank" rel="noopener"
+    >Genesis</a> 想做的就是这个思路。另一方面，过程建模（Procedural Modeling）使用形式语言或者节点化的方式描述模型的生成过程，可以将 3D 模型与文本直接联系起来。比如 SVG 图片使用 html 标记语言，CAD 模型可以完全用代码表示，Houdini 用节点系统描述模型等等。在有了代码化的描述之后，我们就可以通过语言模型去生成这些代码，也就生成了 3D 模型。<a class="link" href="https://infinigen.org/"  target="_blank" rel="noopener"
+    >Infinigen</a> 通过 Blender 构建了描述自然和室内场景的过程建模语言，因此可以实现文本生成三维场景。<a class="link" href="https://gpt4motion.github.io/"  target="_blank" rel="noopener"
+    >GPT4Motion</a> 通过 Blender 实现了无训练，直接从文本生成视频的整个流水线。</p>
+<p>如果我们的任务是从初始帧生成视频，就可以考虑从图片重建出 3D 模型。<a class="link" href="https://supertan0204.github.io/physmotion_website/"  target="_blank" rel="noopener"
+    >PhysMotion</a> 使用的方法就是从单张图片进行 Gaussian Splatting 的重建，然后接入物质点法进行模拟，最后经过视频模型进行渲染。如果我们的单视角重建（本质上是对其他视角的生成任务）足够好，那么生成视频的质量就有保证。但是话又说回来，我们不正是应该利用预训练视频模型的能力来帮助单视角生成的任务吗？为什么反而抛弃了大模型在这方面的能力而只把大模型作为一个渲染器呢？</p>
+<p>我们可以发现，如果只是用大模型去增强现有的图形管线，那么不可避免的需要很长的管线，并且没有充分利用大模型的能力。最理想的情况是，我们用最少的规则限制和控制信号，提供最基础的三维物理和几何的保证，其他的交给预训练模型补充细节。在这个方向上，<a class="link" href="https://cinemaster-dev.github.io/"  target="_blank" rel="noopener"
+    >CineMaster</a> 是一个很有意思的尝试，只通过最简单的包围盒作为条件，就能实现很好的视频控制生成效果。</p>
+<h3 id="推断物理信息">推断物理信息
+</h3><p>前文提到的都是在有物理信息的情况下进行仿真/生成的工作(也就是pipeline3)，如果我们希望将这一概念应用于机器人操作，那么关键问题就在于：如何估计现实世界中物体的物理参数？这是一个极具挑战性的问题，因为目前市面上很少有数据集能够提供包括物体质量、弹性系数等在内的各种物理信息。因此，依赖于大规模数据集进行学习来解决这一问题变得非常困难，特别是当数据集质量较低且规模较小时，模型的泛化能力也会受到限制。那么，如何应对这一挑战呢？如果我们选择依赖物理仿真，是否能够提升模型的泛化能力呢？毕竟，像牛顿定律等自然科学规律是普适的。然而，物理仿真对算法的精度要求非常高。基于此，一个较为可行的初步思路是将模型学习与物理仿真结合：首先通过模型学习来获取物体的初始物理属性，如质量、速度等；然后借助传统物理模拟来预测物体未来的运动规律，最后再用神经网络做微调。</p>
+<p>在这个方向，<a class="link" href="https://www.math.ucla.edu/~cffjiang/"  target="_blank" rel="noopener"
+    >蒋陈凡夫</a>他们组在此基础上做了很多相似的工作，最为出名的是<a class="link" href="https://sites.google.com/view/PAC-NeRF"  target="_blank" rel="noopener"
+    >PAC-Nerf</a>
+与<a class="link" href="https://xpandora.github.io/PhysGaussian/"  target="_blank" rel="noopener"
+    >PhysGaussian</a>。他们的思想非常朴素，但是却很有用。其整体框架如下：
+<img src="/images/physgaussian/methodoverview.jpg"
+	
+	
+	
+	loading="lazy"
+	
+		alt="代码整体框架"
+	
+	
+></p>
+<p>在此基础上，还有两个工作，分别是<a class="link" href="https://physdreamer.github.io/"  target="_blank" rel="noopener"
+    >Physdreamer</a>和<a class="link" href="https://dreamgaussian.github.io/"  target="_blank" rel="noopener"
+    >DreamGaussian</a>，但是都是一些incremental的工作而且做的都是偏生成方向。<a class="link" href="https://physdreamer.github.io/"  target="_blank" rel="noopener"
+    >Physdreamer</a>应该是这个领域较新的成果了，他们结合了<a class="link" href="https://xpandora.github.io/PhysGaussian/"  target="_blank" rel="noopener"
+    >PhysGaussian</a>和<a class="link" href="https://dreamgaussian.github.io/"  target="_blank" rel="noopener"
+    >DreamGaussian</a>两篇工作，简单点说就是PhysGaussian用了多帧的真实视频作为输入(监督信号)，恢复物理属性后，再去预测渲染未来的视频帧，而Physdreamer则只输入视频的第一帧，由第一帧图片生成后续的帧，并将其作为监督信号，再接入PhysGaussian的框架。缺点是显而易见的，生成的视频质量肯定没办法和真实的视频相比的，而且二者之间的误差肯定会随着时间的推移增加，所以他们只选择了前面生成的10帧左右作为监督，那么也就无法生成长视频序列了。而且他们的结果如下:
+<img src="/images/summary/image3.png"
+	
+	
+	
+	loading="lazy"
+	
+		alt="dreamer"
+	
+	
+></p>
+<p>这些评分的意思，比如上面表格的第一个内容表示，对于alocosia（这是一种植物）的视频生成，有86%的人认为他们生成的视频在motion realism的指标下比真实的视频还要好，不过都是人工打分的指标，感觉没啥参考性。而且如果想用到操作的领域，用生成去做肯定是不合适的。不过他们的工作中有一个我觉得还不错的点，他们对于所有的Gaussian点做了knn下采样，也就是只对所谓的driven-particle作仿真，这一点大大加快了仿真的速度。又联想到最近的一篇文章<a class="link" href="https://arxiv.org/abs/2405.18133"  target="_blank" rel="noopener"
+    >A Grid-Free Fluid Solver based on Gaussian Spatial Representation</a>，这篇工作看格式应该是要投SIGGRAPH的，他们是在PhysGaussian的基础上加速了流体的仿真，简单点说就是原本3DGS核携带的信息是球谐函数，他们把这个信息改成了物理属性，或者可以这么理解，本来3DGS渲染的是RGB，他们改成了渲染速度矢量($V_x, V_y, V_z$)。这个思路我感觉挺好的，而且可以和之前knn下采样的思路结合，我们可以在这个基础上继续加新的东西，而且他们的代码还没有开源，所以我最近有时间的话想从头复现下这篇论文，顺便学习下cuda的代码。</p>
+<p>总的来说，我个人感觉这个领域做的人比较少，而且这些工作的不足之处也非常明显，比如首先他们不能将物体的前景与背景分离开来(比如可以参考<a class="link" href="https://stevenlsw.github.io/physgen/"  target="_blank" rel="noopener"
+    >PhysGen</a>的pipeline,并用<a class="link" href="https://lotus3d.github.io/"  target="_blank" rel="noopener"
+    >LOTUS</a>做分割?)，其次他们还是只能模拟简单的物理规律，比如他们都把花朵建模为了纯粹的弹性-质点模型，而且在物理规律模拟的过程中都是比较传统的算法，这对于机器人的操作来说都是必须要解决的问题，我感觉这个领域还是值得研究的。</p>
+<h2 id="机器人中的应用-application-in-robot">机器人中的应用 Application in Robot
+</h2><p>在机器人领域的调研中，最符合我idea的工作是这篇23年的RAL <a class="link" href="https://arxiv.org/abs/2210.09420"  target="_blank" rel="noopener"
+    >DANOs</a>。<img src="/images/summary/image1.png"
+	
+	
+	
+	loading="lazy"
+	
+		alt="概览"
+	
+	
+></p>
+<p>可以参考他们的<a class="link" href="youtu.be/Md0PM-wv_Xg" >视频</a>作进一步的了解。
+<img src="/images/summary/image2.png"
+	
+	
+	
+	loading="lazy"
+	
+		alt="部分视频截图"
+	
+	
+></p>
+<p>他们的工作是通过纯粹的视觉信息来估计物体的质量，重心，摩擦系数这些属性并辅助机械爪工作，由于是23年的工作，所以他们的框架还是建立在Nerf的基础上的，也就是先建立一个体素场，然后在体素的密度和质量之间，通过神经网络的方式建立一个映射，从而恢复出物体的属性。而且他们还在实物实验上验证了他们的结果，不过这个实物实验比较简单，就是一个肥皂在桌子上滑动，然后预测摩擦力/重力，算出物体的运动规律。</p>
+<p>那么由这个工作出发，自然地会想到两条路径。首先，目前，3DGS技术已经被广泛应用，并且相比NeRF，其基于点云的表示方式在物理仿真中更具优势。因此，直接将 NeRF替换为3DGS是一个显而易见的改进方向。这个工作一眼就能看出来能和PhysGaussian结合，虽然我没找到相关工作，但肯定有人会去做，不过别人可能是普通的二爪机械手，我们是灵巧手，而且还能加入触觉信息，这也是我觉得一个可以探索的方向。</p>
+<p>其次由这个工作，我还联想到了很多预训练上的工作，例如，在现实任务中，机械手可能难以直接抓取桌面上的一张卡片，而更合理的策略是先将卡片推到桌子的边缘，再进行夹取。本质上，这一推卡片的过程与上述预测摩擦力/重力的方法是相似的，都涉及物理信息的推理与利用。然而，据我观察，大部分机器人领域的研究仍然主要关注于抓取姿态的生成，即如何在几何层面找到最优的抓取方式，而对物体的物理属性（如摩擦、质心、变形）以及环境因素的考量较少。因此，我的研究想法正是希望从物理信息的角度出发，探索更加智能的抓取策略。（如果后续要做这个方向上的工作，我希望能从这个简单的任务（推卡片）开始做）</p>
+<p>有人可能会质疑：如果目标是执行某些运动学任务（如推卡片、打乒乓球等），为什么不直接用端到端控制器进行学习？目前已有研究通过强化学习等方法，成功训练出了能够打乒乓球或羽毛球的机器人，是否还有必要引入物理建模？</p>
+<p>首先，从直觉上来说，我觉得通过物理规律建模得到的结果可以泛化到很多未知的情境中，端到端的控制方法虽然可以在特定任务上表现出色，但它们通常是基于数据驱动的黑盒模型，容易受到环境因素（如颜色、光照变化等）的干扰。而基于物理规律的建模方法则能够泛化到更多未知场景，不依赖于特定数据分布。</p>
+<p>其次，按照我文章一开始提出的overview，哪一个环节出现了问题，对于我来说都是可控的，这种可控性使得物理建模能够更好地与新兴的研究成果结合（比如之前提到的lotus），并进行模块化优化。而端到端学习往往难以解释模型的决策逻辑，并且对于计算资源的消耗量巨大。</p>
+<p>第三，打乒乓球这种工作只能局限于运动学模型，而对于更精细的操作（如灵巧手抓取柔性物体、操纵复杂工具、物体局部形变等），物理仿真能够提供更完整的解释。例如，在精细抓取任务中，局部形变、摩擦力、微观接触点的作用不可忽视，而这些信息很难通过端到端的黑盒方法直接学习到。</p>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+    <section class="article-tags">
+        
+    </section>
+
+
+    
+    <section class="article-copyright">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
+</svg>
+
+
+
+        <span>Licensed under CC BY-NC-SA 4.0</span>
+    </section>
+    </footer>
+
+
+    
+        <link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI&#43;WdtXRGWt2kTvGFasHpSy3SV"crossorigin="anonymous"
+            ><script 
+                src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG&#43;vnGctmUb0ZY0l8"crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"integrity="sha384-&#43;VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4&#43;/RRE05"crossorigin="anonymous"
+                defer
+                >
+            </script><script>
+    window.addEventListener("DOMContentLoaded", () => {
+        renderMathInElement(document.body, {
+            delimiters: [
+                { left: "$$", right: "$$", display: true },
+                { left: "$", right: "$", display: false },
+                { left: "\\(", right: "\\)", display: false },
+                { left: "\\[", right: "\\]", display: true }
+            ],
+            ignoredClasses: ["gist"]
+        });})
+</script>
+    
+</article>
+
+    
+
+    
+
+<aside class="related-content--wrapper">
+    <h2 class="section-title">相关文章</h2>
+    <div class="related-content">
+        <div class="flex article-list--tile">
+            
+                
+<article class="has-image">
+    <a href="/p/cosmos/">
+        
+        
+            <div class="article-image">
+                
+                    <img src="/images/cosmos/cover.png" loading="lazy" data-key="cosmos" data-hash="/images/cosmos/cover.png"/>
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Cosmos</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="has-image">
+    <a href="/p/physdreamer/">
+        
+        
+            <div class="article-image">
+                
+                    <img src="/images/physdreamer_cover.jpg" loading="lazy" data-key="Physdreamer" data-hash="/images/physdreamer_cover.jpg"/>
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Physdreamer</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="has-image">
+    <a href="/p/dough/">
+        
+        
+            <div class="article-image">
+                
+                    <img src="/images/doughs/cover.png" loading="lazy" data-key="Dough" data-hash="/images/doughs/cover.png"/>
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Dough</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="has-image">
+    <a href="/p/danos/">
+        
+        
+            <div class="article-image">
+                
+                    <img src="/images/DANOs/cover.png" loading="lazy" data-key="DANOs" data-hash="/images/DANOs/cover.png"/>
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">DANOs</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="has-image">
+    <a href="/p/physgaussian/">
+        
+        
+            <div class="article-image">
+                
+                    <img src="/images/physgaussian_cover.jpg" loading="lazy" data-key="Physgaussian" data-hash="/images/physgaussian_cover.jpg"/>
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Phygaussian</h2>
+        </div>
+    </a>
+</article>
+
+            
+        </div>
+    </div>
+</aside>
+
+     
+    
+        
+    <div class="disqus-container">
+    <div id="disqus_thread"></div>
+<script>
+    window.disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "hugo-theme-stack" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+<style>
+    .disqus-container {
+        background-color: var(--card-background);
+        border-radius: var(--card-border-radius);
+        box-shadow: var(--shadow-l1);
+        padding: var(--card-padding);
+    }
+</style>
+
+<script>
+    window.addEventListener('onColorSchemeChange', (e) => {
+        if (typeof DISQUS == 'object') {
+            DISQUS.reset({
+                reload: true
+            });
+        }
+    })
+</script>
+
+    
+
+    <section class="totalcount">
+    
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+    发表了11篇文章 · 
+    总计0.06k字
+</section>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.1e9a3bafd846ced4c345d084b355fb8c7bae75701c338f8a1f8a82c780137826.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+<style>
+    .highlight {
+         
+        max-height: 400px;
+        overflow: hidden;
+    }
+
+    .code-show {
+        max-height: none !important;
+    }
+
+    .code-more-box {
+        width: 100%;
+        padding-top: 78px;
+        background-image: -webkit-gradient(linear, left top, left bottom, from(rgba(255, 255, 255, 0)), to(#fff));
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 1;
+    }
+
+    .code-more-btn {
+        display: block;
+        margin: auto;
+        width: 44px;
+        height: 22px;
+        background: #f0f0f5;
+        border-top-left-radius: 8px;
+        border-top-right-radius: 8px;
+        padding-top: 6px;
+        cursor: pointer;
+    }
+
+    .code-more-img {
+        cursor: pointer !important;
+        display: block;
+        margin: auto;
+        width: 22px;
+        height: 16px;
+    }
+</style>
+
+<script>
+  function initCodeMoreBox() {
+    let codeBlocks = document.querySelectorAll(".highlight");
+    if (!codeBlocks) {
+      return;
+    }
+    codeBlocks.forEach(codeBlock => {
+      
+      if (codeBlock.scrollHeight <= codeBlock.clientHeight) {
+        return;
+      }
+      
+      
+      let codeMoreBox = document.createElement('div');
+      codeMoreBox.classList.add('code-more-box');
+      
+      let codeMoreBtn = document.createElement('span');
+      codeMoreBtn.classList.add('code-more-btn');
+      codeMoreBtn.addEventListener('click', () => {
+        codeBlock.classList.add('code-show');
+        codeMoreBox.style.display = 'none';
+        
+        window.dispatchEvent(new Event('resize'))
+      })
+      
+      let img = document.createElement('img');
+      img.classList.add('code-more-img');
+      img.src = "https:\/\/Peraspera1.github.io\/icons\/codeMore.png"
+      
+      codeMoreBtn.appendChild(img);
+      codeMoreBox.appendChild(codeMoreBtn);
+      codeBlock.appendChild(codeMoreBox)
+    })
+  }
+  
+  initCodeMoreBox();
+</script>
+
+<style>
+  @font-face {
+    font-family: 'xingkai';
+    src: url(https://Peraspera1.github.io/font/xingkai.ttf) format('truetype');
+  }
+
+  :root {
+    --base-font-family: 'xingkai';
+    --code-font-family: 'xingkai';
+  }
+</style>
+    </body>
+</html>
